@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory – Soorten Longkanker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f3; color: #1a1a1a; padding: 2rem 1rem; min-height: 100vh; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.25rem; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 1.5rem; }
+  .stats { display: flex; gap: 12px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .stat { background: #fff; border-radius: 8px; border: 0.5px solid #ddd; padding: 8px 16px; font-size: 13px; color: #666; }
+  .stat span { font-weight: 500; font-size: 15px; color: #1a1a1a; display: block; }
+  #msg { font-size: 14px; color: #666; min-height: 20px; margin-bottom: 10px; }
+  .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 720px; }
+  .card { min-height: 90px; border-radius: 8px; border: 0.5px solid #ccc; background: #eee; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font-size: 13px; line-height: 1.4; transition: background 0.15s, transform 0.1s; user-select: none; }
+  .card:hover { background: #fff; }
+  .card.flipped { background: #E6F1FB; border-color: #378ADD; color: #042C53; font-weight: 500; }
+  .card.flipped.term { background: #E1F5EE; border-color: #1D9E75; color: #04342C; }
+  .card.matched { background: #EAF3DE; border-color: #639922; color: #173404; cursor: default; }
+  .card.wrong { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+  .card-back { font-size: 22px; color: #aaa; }
+  button { margin-top: 1rem; padding: 8px 20px; border-radius: 8px; border: 0.5px solid #ccc; background: #fff; cursor: pointer; font-size: 14px; }
+  button:hover { background: #f0f0f0; }
+  .win-banner { display: none; background: #EAF3DE; border: 0.5px solid #639922; border-radius: 12px; padding: 1.5rem; text-align: center; color: #173404; max-width: 720px; margin-top: 1rem; }
+  .win-banner h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  @media (max-width: 500px) { .memory-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<h1>Memory – Soorten Longkanker</h1>
+<p class="subtitle">Koppel elk type longkanker aan de juiste omschrijving.</p>
+
+<div class="stats">
+  <div class="stat"><span id="pogingen">0</span>Pogingen</div>
+  <div class="stat"><span id="gevonden">0/8</span>Gevonden</div>
+</div>
+<div id="msg">Klik op twee kaarten om ze te koppelen.</div>
+<div class="memory-grid" id="grid"></div>
+<div class="win-banner" id="win">
+  <h2>Goed gedaan! 🎉</h2>
+  <p id="win-msg" style="margin:0 0 1rem; font-size:14px;"></p>
+  <button onclick="initGame()">Opnieuw spelen</button>
+</div>
+<button id="restart" onclick="initGame()">Opnieuw starten</button>
+
+<script>
+const pairs = [
+  { term: "Adenocarcinoom", def: "Ontstaat in kliercellen; zit meestal in het buitenste deel van de long" },
+  { term: "Plaveiselcelcarcinoom", def: "Ontstaat in cellen aan de binnenkant van de longen; zit meestal in het midden" },
+  { term: "Grootcellig carcinoom", def: "Groeit en verspreidt zich snel; reageert minder goed op behandeling (~1 op 10)" },
+  { term: "Pancoast tumor", def: "Zeldzame tumor in de bovenkant van de long; eerste klacht is vaak schouderpijn" },
+  { term: "Kleincellige longkanker", def: "Groeit heel snel en is bij diagnose vaak al uitgezaaid (~1 op 5 patiënten)" },
+  { term: "Niet-kleincellige longkanker", def: "Meest voorkomende soort; groeit langzaam en zaait minder snel uit" },
+  { term: "Genafwijking (mutatie)", def: "Kan oorzaak zijn van adenocarcinoom; belangrijk voor de keuze van behandeling" },
+  { term: "Roken", def: "Belangrijke risicofactor voor zowel adenocarcinoom als plaveiselcelcarcinoom" },
+];
+
+let cards = [], flipped = [], matched = 0, attempts = 0, locked = false;
+
+function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+function initGame() {
+  cards = []; flipped = []; matched = 0; attempts = 0; locked = false;
+  document.getElementById('pogingen').textContent = '0';
+  document.getElementById('gevonden').textContent = '0/8';
+  document.getElementById('msg').textContent = 'Klik op twee kaarten om ze te koppelen.';
+  document.getElementById('win').style.display = 'none';
+  document.getElementById('restart').style.display = 'inline-block';
+  const all = shuffle([
+    ...pairs.map((p, i) => ({ id: i, type: 'term', text: p.term })),
+    ...pairs.map((p, i) => ({ id: i, type: 'def', text: p.def })),
+  ]);
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  all.forEach((item) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.dataset.id = item.id;
+    el.dataset.type = item.type;
+    el.dataset.text = item.text;
+    el.innerHTML = `<span class="card-back"><i class="ti ti-medical-cross"></i></span>`;
+    el.addEventListener('click', () => flipCard(el));
+    grid.appendChild(el);
+    cards.push(el);
+  });
+}
+
+function flipCard(el) {
+  if (locked || el.classList.contains('matched') || el.classList.contains('flipped')) return;
+  el.innerHTML = el.dataset.text;
+  el.classList.add('flipped');
+  if (el.dataset.type === 'term') el.classList.add('term');
+  flipped.push(el);
+  if (flipped.length === 2) check();
+}
+
+function check() {
+  locked = true;
+  attempts++;
+  document.getElementById('pogingen').textContent = attempts;
+  const [a, b] = flipped;
+  if (a.dataset.id === b.dataset.id && a.dataset.type !== b.dataset.type) {
+    a.classList.replace('flipped', 'matched'); b.classList.replace('flipped', 'matched');
+    a.classList.remove('term'); b.classList.remove('term');
+    matched++;
+    document.getElementById('gevonden').textContent = matched + '/8';
+    document.getElementById('msg').textContent = '✓ Correct!';
+    flipped = []; locked = false;
+    if (matched === 8) {
+      document.getElementById('win').style.display = 'block';
+      document.getElementById('win-msg').textContent = 'Je hebt alle 8 paren gevonden in ' + attempts + ' pogingen!';
+      document.getElementById('restart').style.display = 'none';
+    }
+  } else {
+    a.classList.add('wrong'); b.classList.add('wrong');
+    document.getElementById('msg').textContent = 'Niet juist, probeer opnieuw.';
+    setTimeout(() => {
+      [a, b].forEach(c => {
+        c.innerHTML = `<span class="card-back"><i class="ti ti-medical-cross"></i></span>`;
+        c.classList.remove('flipped', 'wrong', 'term');
+      });
+      flipped = []; locked = false;
+      document.getElementById('msg').textContent = 'Klik op twee kaarten om ze te koppelen.';
+    }, 1200);
+  }
+}
+
+initGame();
+</script>
+</body>
+</html>

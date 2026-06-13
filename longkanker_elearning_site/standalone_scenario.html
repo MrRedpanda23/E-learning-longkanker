@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario-spel – Fysiotherapeut & Longkanker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f3; color: #1a1a1a; padding: 2rem 1rem; min-height: 100vh; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 1.5rem; }
+  .score-bar { display: flex; gap: 12px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .score-pill { background: #fff; border: 0.5px solid #ddd; border-radius: 8px; padding: 6px 14px; font-size: 13px; color: #666; }
+  .score-pill span { font-weight: 500; color: #1a1a1a; }
+  .progress-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+  .progress-bar { height: 4px; background: #e0e0e0; border-radius: 2px; margin-bottom: 1.5rem; }
+  .progress-fill { height: 4px; background: #1D9E75; border-radius: 2px; transition: width 0.4s; }
+  .scenario-card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .scenario-label { font-size: 12px; color: #666; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .scenario-text { font-size: 15px; line-height: 1.6; color: #1a1a1a; }
+  .options-grid { display: grid; gap: 8px; margin-bottom: 1rem; }
+  .opt-btn { text-align: left; padding: 12px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fff; cursor: pointer; font-size: 14px; line-height: 1.5; color: #1a1a1a; transition: background 0.12s; width: 100%; }
+  .opt-btn:hover:not(:disabled) { background: #f0f0f0; }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn.correct { background: #EAF3DE; border-color: #639922; color: #173404; }
+  .opt-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+  .opt-btn.reveal { background: #E1F5EE; border-color: #1D9E75; color: #04342C; }
+  .feedback-box { border-radius: 8px; padding: 12px 14px; font-size: 14px; line-height: 1.5; margin-bottom: 1rem; border: 0.5px solid; }
+  .feedback-box.ok { background: #EAF3DE; border-color: #639922; color: #173404; }
+  .feedback-box.nok { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+  .next-btn { padding: 9px 22px; border-radius: 8px; border: 0.5px solid #ccc; background: #fff; cursor: pointer; font-size: 14px; color: #1a1a1a; }
+  .next-btn:hover { background: #f0f0f0; }
+  .end-card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 2rem; text-align: center; display: none; }
+  .end-score { font-size: 36px; font-weight: 500; color: #1a1a1a; margin: 0.5rem 0; }
+  .end-label { font-size: 14px; color: #666; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Scenario-spel – Fysiotherapeut & Longkanker</h1>
+  <p class="subtitle">Wat doe jij als fysiotherapeut? Kies de beste aanpak in elke situatie.</p>
+
+  <div id="game">
+    <div class="score-bar">
+      <div class="score-pill">Scenario <span id="cur">1</span> van 5</div>
+      <div class="score-pill">Score <span id="score">0</span></div>
+    </div>
+    <div class="progress-label">Voortgang</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+    <div class="scenario-card">
+      <div class="scenario-label"><i class="ti ti-user" style="font-size:15px"></i> Situatie</div>
+      <p class="scenario-text" id="sit"></p>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-label"><i class="ti ti-help-circle" style="font-size:15px"></i> Vraag</div>
+      <p class="scenario-text" id="qtext"></p>
+    </div>
+
+    <div class="options-grid" id="opts"></div>
+    <div class="feedback-box" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nxt" style="display:none" onclick="nextQ()">Volgende scenario →</button>
+  </div>
+
+  <div class="end-card" id="end">
+    <div style="font-size:14px; color:#666; margin-bottom:4px;">Eindresultaat</div>
+    <div class="end-score" id="end-score"></div>
+    <div class="end-label" id="end-msg"></div>
+    <button class="next-btn" onclick="restart()">Opnieuw spelen</button>
+  </div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    sit: "Je behandelt mevrouw De Vries (58), een patiënt met longkanker die net haar tweede chemobehandeling heeft gehad. Ze vertelt dat ze niet meer wil oefenen omdat 'het toch niks helpt'. Ze lijkt somber en maakt weinig oogcontact.",
+    q: "Wat is jouw eerste stap als fysiotherapeut?",
+    opts: [
+      { text: "De oefeningen gewoon doorzetten — beweging is altijd goed.", ok: false },
+      { text: "Haar gevoelens erkennen, bespreken wat haar bezighoudt en nagaan of doorverwijzing naar psychosociale zorg nodig is.", ok: true },
+      { text: "De behandeling beëindigen omdat ze niet gemotiveerd is.", ok: false },
+      { text: "Haar huisarts bellen zonder dit eerst met haar te bespreken.", ok: false },
+    ],
+    fb_ok: "Goed! Psychische klachten signaleren en bespreekbaar maken is precies de rol van de fysiotherapeut. Motivatie en therapietrouw worden direct beïnvloed door psychisch welbevinden.",
+    fb_nok: "Niet helemaal. De fysiotherapeut behandelt geen psychische klachten, maar heeft wel een signalerende rol. Het erkennen van haar gevoelens en zo nodig doorverwijzen is de juiste aanpak."
+  },
+  {
+    sit: "Meneer Bakker (65) meldt dat hij al weken niet meer kan werken door vermoeidheid en benauwdheid. Hij maakt zich grote zorgen over zijn gezin en de toekomst. Tijdens de sessie is hij gespannen en gefrustreerd.",
+    q: "Hoe verwerk jij de psychosociale situatie van meneer Bakker in het behandelplan?",
+    opts: [
+      { text: "Ik focus uitsluitend op de lichamelijke klachten; dat is mijn taak.", ok: false },
+      { text: "Ik houd rekening met zijn vermoeidheid en angst: pas de intensiteit aan en bespreek zijn zorgen kort. Indien nodig verwijs ik door naar de huisarts.", ok: true },
+      { text: "Ik geef hem een folder over psychosociale zorg en ga verder met behandelen.", ok: false },
+      { text: "Ik vraag hem zijn zorgen thuis te laten, zodat hij zich kan concentreren op de therapie.", ok: false },
+    ],
+    fb_ok: "Precies goed. Angst en stress beïnvloeden de inspanningstolerantie en het herstel direct. Aanpassen én signaleren hoort bij de rol van de fysiotherapeut.",
+    fb_nok: "Psychosociale factoren hebben een directe invloed op vermoeidheid, pijn en inspanningstolerantie. De fysiotherapeut houdt hier rekening mee in het behandelplan en verwijst zo nodig door."
+  },
+  {
+    sit: "Een collega zegt: 'Als een patiënt psychische klachten heeft, is dat niet ons probleem. Wij zijn fysiotherapeuten, geen psychologen.'",
+    q: "Hoe reageer jij op deze uitspraak?",
+    opts: [
+      { text: "Ik ben het ermee eens — psychische zorg is voor psychologen.", ok: false },
+      { text: "Ik leg uit dat psychische klachten motivatie, vermoeidheid en herstel beïnvloeden. Onze rol is signaleren, bespreekbaar maken en doorverwijzen — niet behandelen.", ok: true },
+      { text: "Ik zeg niets om de sfeer goed te houden.", ok: false },
+      { text: "Ik stuur alle patiënten voortaan direct door naar de psycholoog.", ok: false },
+    ],
+    fb_ok: "Juist! De fysiotherapeut behandelt geen psychische problematiek, maar heeft wel een signalerende en ondersteunende rol binnen de multidisciplinaire aanpak.",
+    fb_nok: "De fysiotherapeut is geen psycholoog, maar psychische klachten raken direct het fysiotherapeutisch domein. Signaleren, bespreekbaar maken en doorverwijzen hoort bij je professionele rol."
+  },
+  {
+    sit: "Mevrouw Jansen (52) vertelt dat ze zich steeds meer terugtrekt van vrienden en familie. Ze voelt zich een last en zegt: 'Ik doe het allemaal maar voor de anderen.' Ze volgt de therapie trouw, maar lijkt innerlijk uitgeput.",
+    q: "Wat doe jij in deze situatie?",
+    opts: [
+      { text: "Niets — ze volgt de therapie toch al, dus het gaat goed.", ok: false },
+      { text: "Ik complimenteer haar therapietrouw, benoem dat ik haar vermoeidheid zie, en vraag of ze al gesproken heeft met haar huisarts over hoe ze zich voelt.", ok: true },
+      { text: "Ik verwijs haar direct door naar een psycho-oncologisch centrum zonder dit te bespreken.", ok: false },
+      { text: "Ik geef haar meer oefeningen mee voor thuis om haar afleiding te geven.", ok: false },
+    ],
+    fb_ok: "Goed gedaan. Een veilige behandelomgeving creëren, signalen benoemen en de brug naar de huisarts leggen is precies de ondersteunende rol van de fysiotherapeut.",
+    fb_nok: "Sociale terugtrekking en uitputting zijn signalen van psychische overbelasting. De fysiotherapeut benoemt dit, bespreekt het met de patiënt en verwijst zo nodig via de huisarts."
+  },
+  {
+    sit: "Je patiënt vraagt: 'Kunnen beweging en sport echt helpen bij hoe ik me voel? Ik ben zo moe en somber.' Hij twijfelt of fysiotherapie voor hem zin heeft.",
+    q: "Wat is het beste antwoord?",
+    opts: [
+      { text: "Nee, voor somberheid moet je echt naar een psycholoog.", ok: false },
+      { text: "Fysieke activiteit kan bijdragen aan een beter mentaal welbevinden. We bouwen rustig op en houden rekening met hoe je je voelt — het gaat niet alleen om spierkracht.", ok: true },
+      { text: "We gaan gewoon door met de standaard oefeningen, de stemming komt vanzelf wel.", ok: false },
+      { text: "Als je somber bent, kun je beter even stoppen met fysiotherapie.", ok: false },
+    ],
+    fb_ok: "Uitstekend. Fysieke activiteit in een veilige omgeving draagt aantoonbaar bij aan mentaal welzijn. Dat is een van de manieren waarop de fysiotherapeut bijdraagt aan de totale zorg voor de patiënt.",
+    fb_nok: "Beweging en een veilige behandelomgeving kunnen het mentale welzijn verbeteren. Dat is een van de manieren waarop de fysiotherapeut bijdraagt aan de totale zorg voor de patiënt."
+  }
+];
+
+let current = 0, score = 0, answered = false;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function render() {
+  const s = scenarios[current];
+  document.getElementById('cur').textContent = current + 1;
+  document.getElementById('score').textContent = score;
+  document.getElementById('prog').style.width = (current / scenarios.length * 100) + '%';
+  document.getElementById('sit').textContent = s.sit;
+  document.getElementById('qtext').textContent = s.q;
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('nxt').style.display = 'none';
+  answered = false;
+
+  const grid = document.getElementById('opts');
+  grid.innerHTML = '';
+  const shuffled = shuffle(s.opts);
+  shuffled.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.text;
+    btn.onclick = () => answer(opt, shuffled, s);
+    grid.appendChild(btn);
+  });
+}
+
+function answer(chosen, all, s) {
+  if (answered) return;
+  answered = true;
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (all[i].ok) btn.classList.add(chosen.ok ? 'correct' : 'reveal');
+    else if (all[i] === chosen && !chosen.ok) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback-box ' + (chosen.ok ? 'ok' : 'nok');
+  fb.textContent = chosen.ok ? s.fb_ok : s.fb_nok;
+  fb.style.display = 'block';
+  if (chosen.ok) score++;
+  document.getElementById('score').textContent = score;
+  const nxt = document.getElementById('nxt');
+  nxt.textContent = current < scenarios.length - 1 ? 'Volgende scenario →' : 'Bekijk resultaat →';
+  nxt.style.display = 'inline-block';
+}
+
+function nextQ() {
+  current++;
+  if (current >= scenarios.length) {
+    document.getElementById('game').style.display = 'none';
+    const end = document.getElementById('end');
+    end.style.display = 'block';
+    document.getElementById('end-score').textContent = score + ' / ' + scenarios.length;
+    const msgs = ['Blijf de theorie nog eens doornemen!', 'Goed bezig, maar er is nog ruimte voor verbetering.', 'Bijna perfect — goed gedaan!', 'Uitstekend! Je bent klaar voor de praktijk.'];
+    const idx = score <= 1 ? 0 : score <= 3 ? 1 : score === 4 ? 2 : 3;
+    document.getElementById('end-msg').textContent = msgs[idx];
+  } else {
+    render();
+  }
+}
+
+function restart() {
+  current = 0; score = 0;
+  document.getElementById('end').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

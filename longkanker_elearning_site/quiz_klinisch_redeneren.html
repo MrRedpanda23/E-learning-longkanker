@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz klinisch redeneren – Module 5</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="shell">
+    <div class="sidebar">
+      <a class="back" href="module5.html" title="Terug naar module 5">&#8617;</a>
+      <a class="item" href="index.html">Homepagina</a>
+      <a class="item" href="module1.html">Module 1: Wat is kanker?</a>
+      <a class="item" href="module2.html">Module 2: Wat is longkanker?</a>
+      <a class="item" href="module3.html">Module 3: Behandeling van longkanker</a>
+      <a class="item" href="module4.html">Module 4: Fysiotherapeutische behandeling</a>
+      <a class="item active" href="module5.html">Module 5: Diepgang op longkanker</a>
+    </div>
+    <div class="content-area">
+      <div class="chiprow">
+        <a class="chip" href="module5.html">&#8592; Module 5</a>
+        <span class="crumb">Quiz klinisch redeneren</span>
+      </div>
+      <div class="main">
+        <h2 class="page-title">Klinisch redeneren &ndash; Casus Ingrid</h2>
+        <div class="card">
+          <h3>Patiëntprofiel</h3>
+          <p>Ingrid, 64 jaar, ex-roker (25 pakjaren, gestopt 5 jaar geleden). NSCLC adenocarcinoom stadium IIIA links. EGFR-mutatie positief &rarr; behandeld met osimertinib (targeted therapy). Daarnaast thoracale radiotherapie. Comorbiditeiten: COPD GOLD I.</p>
+        </div>
+
+        <div class="card">
+          <div class="quiz-question">
+            <h4>1. Welke bevindingen in dit profiel zijn voor jou als fysiotherapeut de meeste rode vlaggen, en waarom?</h4>
+            <p class="lead"><em>Open vraag &mdash; formuleer je eigen antwoord. Denk aan: stadium IIIA, de combinatie met COPD GOLD I, het gebruik van osimertinib (targeted therapy) en de gevolgen van radiotherapie op de thorax.</em></p>
+            <textarea rows="4" style="width:100%;border-radius:10px;border:1px solid #ddd;padding:10px;font-family:inherit;font-size:14px;" placeholder="Jouw antwoord..."></textarea>
+          </div>
+
+          <div class="quiz-question">
+            <h4>2. Stel een training op voor Ingrid voor de komende 4 weken. Let op de labwaarden en geef per week aan wat je doet.</h4>
+            <p class="lead"><em>Open vraag &mdash; bouw je antwoord op rondom prehabilitatie/trainingsleer (zie Module 5: Specifieke trainingsleer) en houd rekening met haar COPD en de bestraling.</em></p>
+            <textarea rows="6" style="width:100%;border-radius:10px;border:1px solid #ddd;padding:10px;font-family:inherit;font-size:14px;" placeholder="Jouw antwoord, eventueel per week..."></textarea>
+          </div>
+
+          <div id="quiz-container"></div>
+
+          <div class="quiz-question">
+            <h4>4. Ingrid rapporteert na 2 weken plotselinge toename van dyspneu en droge hoest. Ze slikt osimertinib. Wat overweeg je, en wat doe je?</h4>
+            <p class="lead"><em>Open vraag &mdash; denk aan immuungerelateerde en medicatiegerelateerde bijwerkingen (zie Module 5: Immunotherapie) en de noodzaak om dit te melden aan de behandelend arts.</em></p>
+            <textarea rows="4" style="width:100%;border-radius:10px;border:1px solid #ddd;padding:10px;font-family:inherit;font-size:14px;" placeholder="Jouw antwoord..."></textarea>
+          </div>
+        </div>
+
+        <a class="back-home" href="module5.html">&#8592; Terug naar Module 5</a>
+      </div>
+    </div>
+  </div>
+  <script src="quizzes-data.js"></script>
+  <script>
+    // render question 3 (multiple choice) manually with correct numbering
+    const q3 = {
+      question: "3. Ingrid zegt: \"Sporten durf ik niet.\" Welke aanpak past het beste bij inspanningsangst (kinesiofobie) bij een oncologische patiënt?",
+      choices: [
+        {text:"Uitleg geven over veilig bewegen en direct starten met een regulier trainingsprogramma.", correct:false},
+        {text:"De angst bespreken, starten met laagdrempelige beweging en de belasting geleidelijk opbouwen.", correct:true},
+        {text:"Eerst afwachten tot de patiënt meer vertrouwen heeft voordat een beweegprogramma wordt gestart.", correct:false},
+        {text:"De patiënt verwijzen voor aanvullende begeleiding voordat met bewegen wordt begonnen.", correct:false}
+      ]
+    };
+    QUIZ_DATA['__casus_q3'] = [q3];
+  </script>
+  <script src="quiz.js"></script>
+  <script>renderQuiz('quiz-container', '__casus_q3');</script>
+</body>
+</html>
