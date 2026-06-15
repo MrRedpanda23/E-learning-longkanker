@@ -1,0 +1,240 @@
+/* ============================================================
+   E-learning Longkanker — Clinical theme v2
+   Palette: petrol/teal primary, warm coral accent (lung tissue),
+   clinical off-white background, slate text, sage success.
+   ============================================================ */
+
+:root{
+  --petrol:#0f3d3e;
+  --petrol-light:#1a5c5d;
+  --teal-pale:#e6f2f1;
+  --bg:#f6f8f8;
+  --surface:#ffffff;
+  --coral:#e4623f;
+  --coral-soft:#fbe6df;
+  --sage:#5b8c6e;
+  --sage-soft:#e3f0e6;
+  --text:#1f2b2b;
+  --muted:#5d6e6d;
+  --border:#dde6e5;
+  --radius:10px;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+  --sans:"Inter","Segoe UI",Arial,sans-serif;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  font-size:16px;
+}
+a{color:var(--petrol-light);text-decoration:none;}
+a:hover{text-decoration:underline;}
+img{max-width:100%;display:block;border-radius:var(--radius);}
+
+/* ============ Top navigation ============ */
+.topnav{
+  background:var(--petrol);
+  color:#fff;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 1px 0 rgba(0,0,0,0.08);
+}
+.topnav-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;gap:6px;
+  padding:0 24px;height:56px;
+  overflow-x:auto;
+  scrollbar-width:thin;
+}
+.topnav-inner::-webkit-scrollbar{height:4px;}
+.topnav-inner::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:2px;}
+.topnav .brand{
+  font-family:var(--mono);
+  font-weight:700;font-size:13px;letter-spacing:.06em;
+  color:#fff;text-decoration:none;
+  padding:8px 14px 8px 0;margin-right:8px;
+  border-right:1px solid rgba(255,255,255,.18);
+  white-space:nowrap;
+}
+.topnav .brand:hover{text-decoration:none;opacity:.85;}
+.topnav .nav-link{
+  color:rgba(255,255,255,.75);
+  font-size:14px;font-weight:500;
+  padding:8px 12px;border-radius:6px;
+  white-space:nowrap;
+  transition:background .15s, color .15s;
+}
+.topnav .nav-link:hover{
+  background:rgba(255,255,255,.08);
+  color:#fff;text-decoration:none;
+}
+.topnav .nav-link.active{
+  background:var(--coral);
+  color:#fff;
+}
+
+/* ============ Hero ============ */
+.hero{
+  width:100%;height:200px;object-fit:cover;display:block;border-radius:0;
+}
+
+/* ============ Breadcrumb / vitals strip ============ */
+.chiprow{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:18px 24px 0;
+}
+.chiprow .crumb{
+  font-family:var(--mono);
+  font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  background:var(--petrol);color:#fff;
+  border-radius:6px;padding:8px 14px;font-weight:600;
+}
+.chiprow .arrow{color:var(--muted);font-size:14px;}
+.chiprow a.chip{
+  font-family:var(--mono);
+  font-size:12px;letter-spacing:.04em;
+  border:1px solid var(--border);border-radius:6px;
+  padding:8px 14px;font-weight:600;
+  background:var(--surface);color:var(--petrol);
+  text-decoration:none;
+}
+.chiprow a.chip:hover{background:var(--teal-pale);text-decoration:none;}
+
+/* ============ Main content ============ */
+.main{max-width:1200px;margin:0 auto;padding:0 24px 64px;}
+.main h2.page-title{
+  font-size:30px;font-weight:800;letter-spacing:-0.01em;
+  margin:20px 0 22px;color:var(--petrol);
+}
+.lead{font-size:16px;color:var(--muted);max-width:760px;}
+
+/* ============ Cards ============ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:4px solid var(--petrol);
+  border-radius:var(--radius);
+  padding:26px 28px;margin-bottom:20px;
+}
+.card h3{
+  margin-top:0;font-size:19px;color:var(--petrol);
+  font-weight:700;
+}
+.card h3:first-child{margin-top:0;}
+.card h4{font-size:15px;color:var(--petrol-light);font-weight:700;margin:18px 0 8px;}
+.card table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;}
+.card table th, .card table td{
+  border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top;
+}
+.card table th{background:var(--teal-pale);color:var(--petrol);font-weight:700;}
+.card ul{padding-left:22px;}
+.card li{margin-bottom:4px;}
+.card .sources{font-size:12px;color:var(--muted);margin-top:20px;font-family:var(--mono);}
+.card .sources li{margin-bottom:6px;}
+.card img{margin:14px 0;}
+
+/* ============ Home page ============ */
+.home-grid{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:20px;
+  max-width:1200px;margin:0 auto;padding:24px;
+}
+@media (max-width:880px){.home-grid{grid-template-columns:1fr;}}
+.home-grid .card{margin-bottom:0;}
+.icon-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;}
+.icon-card svg{width:56px;height:56px;}
+
+/* ============ Module index grid ============ */
+.module-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;
+  max-width:1200px;margin:0 auto;padding:8px 24px 48px;
+}
+.module-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-top:4px solid var(--coral);
+  border-radius:var(--radius);padding:22px;
+  text-decoration:none;color:var(--text);
+  display:flex;flex-direction:column;gap:8px;
+  transition:transform .12s, box-shadow .12s;
+}
+.module-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(15,61,62,0.10);
+  text-decoration:none;
+}
+.module-card .mod-label{
+  font-family:var(--mono);font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--coral);font-weight:700;
+}
+.module-card h4{margin:0;font-size:17px;color:var(--petrol);}
+.module-card p{margin:0;font-size:13px;color:var(--muted);}
+
+/* ============ Sub-item list ============ */
+.sub-list{
+  display:flex;flex-direction:column;gap:10px;
+  max-width:1200px;margin:0 auto;padding:0 24px 56px;
+}
+.sub-list a.sub-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 20px;font-weight:600;text-decoration:none;color:var(--text);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+  transition:border-color .12s, background .12s;
+}
+.sub-list a.sub-item:hover{
+  border-color:var(--petrol-light);background:var(--teal-pale);
+  text-decoration:none;
+}
+.sub-list a.sub-item .tag{
+  font-family:var(--mono);
+  font-size:10px;font-weight:700;background:var(--sage-soft);color:var(--sage);
+  border-radius:5px;padding:5px 10px;text-transform:uppercase;letter-spacing:.06em;
+  white-space:nowrap;
+}
+
+/* ============ Embeds ============ */
+.embed-wrap{border-radius:var(--radius);overflow:hidden;margin:18px 0;border:1px solid var(--border);}
+.embed-wrap iframe{width:100%;height:520px;border:0;display:block;}
+
+/* ============ Quiz ============ */
+.quiz-question{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.quiz-question:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.quiz-question h4{margin:0 0 12px;color:var(--text);font-size:15px;}
+.quiz-question .opt{
+  display:block;width:100%;text-align:left;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;margin-bottom:8px;cursor:pointer;font-size:14px;
+  font-family:var(--sans);
+  transition:border-color .12s, background .12s;
+}
+.quiz-question .opt:hover:not(:disabled){border-color:var(--petrol-light);}
+.quiz-question .opt.correct{background:var(--sage-soft);border-color:var(--sage);color:#2f4f3c;}
+.quiz-question .opt.incorrect{background:var(--coral-soft);border-color:var(--coral);color:#7a3322;}
+.quiz-question .opt:disabled{cursor:default;}
+.quiz-submit{
+  background:var(--petrol);color:#fff;border:none;border-radius:8px;
+  padding:14px 32px;font-weight:700;font-size:15px;cursor:pointer;
+}
+.quiz-submit:hover{background:var(--petrol-light);}
+.quiz-result{font-weight:700;margin-top:16px;font-size:16px;}
+
+/* ============ Footer back link ============ */
+.back-home{
+  display:inline-block;margin:0;font-weight:700;color:var(--petrol);
+  text-decoration:none;border:1px solid var(--petrol);border-radius:8px;
+  padding:10px 22px;font-size:14px;
+  transition:background .12s, color .12s;
+}
+.back-home:hover{background:var(--petrol);color:#fff;text-decoration:none;}
+
+p{margin:0 0 12px;}
+
+@media (max-width:640px){
+  .main h2.page-title{font-size:24px;}
+  .topnav .brand{font-size:11px;}
+}
